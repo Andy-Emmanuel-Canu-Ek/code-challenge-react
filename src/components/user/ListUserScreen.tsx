@@ -18,6 +18,8 @@ export const ListUserScreen = () => {
     const data = await getUserList();
     if (data.ok) {
       setuserLis(data.user_list);
+    } else {
+      handleMessageError(data);
     }
   };
 

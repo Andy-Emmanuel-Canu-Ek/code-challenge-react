@@ -1,5 +1,5 @@
 import "moment/locale/es";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { NavbarScreen } from "../ui/NavbarScreen";
 import { messages } from "../../helpers/calendar_config";
@@ -12,6 +12,8 @@ import {
 } from "react-big-calendar";
 import { CalendarEvent } from "./CalendarEvent";
 import { CalendarModal } from "./CalendarModal";
+import { getEventList } from "../../services/eventService";
+import { handleMessageError } from "../../helpers/handleMessages";
 
 moment.locale("es");
 const localizer = momentLocalizer(moment);
@@ -26,6 +28,31 @@ const myEventsList: [any] = [
 
 export const CalendarScreen = () => {
   const [isOpen, setisOpen] = useState(true);
+
+  const [eventList, setEventList] = useState([]);
+
+  useEffect(() => {
+    getEventItems();
+  }, []);
+
+  const getEventItems = async () => {
+    const data = await getEventList();
+    if (data.ok) {
+      console.log(data.event_list)
+      const format_events = data.event_list.map((item) => (
+        {
+          title: item.title,
+          start: moment(item.start_date).toDate(),
+          end: moment(item.end_date).toDate(),
+          bgcolor: "#fafafa",
+        }
+      ))
+      console.log(format_events);
+      setEventList(format_events);
+    }else{
+      handleMessageError(data);
+    }
+  };
 
   const onDoubleClick = (evt: Event) => {
     setisOpen(true);
@@ -64,12 +91,12 @@ export const CalendarScreen = () => {
         <div className="card-body">
           <Calendar
             localizer={localizer}
-            events={myEventsList}
+            events={eventList}
             messages={messages}
             eventPropGetter={eventStyleGetter}
-            components={{
-              event: CalendarEvent,
-            }}
+            // components={{
+            //   event: CalendarEvent,
+            // }}
             onDoubleClickEvent={onDoubleClick}
             
             style={{ height: 500 }}
