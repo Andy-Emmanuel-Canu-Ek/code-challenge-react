@@ -1,10 +1,16 @@
 import React from "react";
 import "../../css/loginStyles.css";
-import { handleMessage, handleMessageError } from "../../helpers/handleMessages";
+import {
+  handleMessage,
+  handleMessageError,
+} from "../../helpers/handleMessages";
 import { useForm } from "../../hooks/useForm";
 import { login, register } from "../../services/authService";
+import { useHistory } from "react-router-dom";
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ location }) => {
+  const history = useHistory();
+
   const [formValuesLogin, handleInputChangeLogin] = useForm({
     lEmail: "example@gmail.com",
     lPassword: "123456",
@@ -30,38 +36,42 @@ export const LoginScreen = () => {
 
   const handleLoginSubmit = async (e: any) => {
     e.preventDefault();
-    
+
     const { lEmail, lPassword }: any = formValuesLogin;
 
-    console.log({lEmail});
-    const data = await login(lEmail, lPassword)
-    if(data.ok){
-        handleMessage(data)
-
-    }else{
-        handleMessageError(data);
+    console.log({ lEmail });
+    const data = await login(lEmail, lPassword);
+    if (data.ok) {
+      handleMessage(data);
+      history.push("/usuario");
+    } else {
+      handleMessageError(data);
     }
+
     // const data = login(lEmail, lPassword);
   };
 
   const handleRegisterSubmit = async (e: any) => {
     e.preventDefault();
-     
-    const {  rName: name,
-        rEmail: email,
-        rPassword: password,
-        rPasswordConfirm }: any = formValuesRegister;
+
+    const {
+      rName: name,
+      rEmail: email,
+      rPassword: password,
+      rPasswordConfirm,
+    }: any = formValuesRegister;
 
     const data = await register({
-        name,
-        email,
-        password
-    })
+      name,
+      email,
+      password,
+    });
     console.log(data);
-    if(data.ok){
-        handleMessage(data)
-    }else{
-        handleMessageError(data);
+    if (data.ok) {
+      handleMessage(data);
+      history.push("/usuario");
+    } else {
+      handleMessageError(data);
     }
 
   };

@@ -1,21 +1,8 @@
 import React from "react";
-import Swal from 'sweetalert2';
-export const ItemListScreen = ({ item }) => {
+export const ItemListScreen = ({ item, handleDelete }) => {
   const { index, id, name, email, pass } = item;
 
-  const handleDelete: any = (item: Object) => {
-    Swal.fire({
-        title: 'Eliminar usuario',
-        text: '¿Seguro que desea eliminar este usuario?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar!',
-        cancelButtonText: 'No'
-      }).then((result) => {
-        console.log(result);
-      })
-  }
-
+  
   return (
     <>
       <tr>
