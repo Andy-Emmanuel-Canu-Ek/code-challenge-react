@@ -1,69 +1,82 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
-import DateTimePicker from 'react-datetime-picker'
+import DateTimePicker from "react-datetime-picker";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 const customStyles = {
   content: {
-    top: "50%",
-    left: "50%",
+    top: "auto",
+    left: "auto",
     right: "auto",
     bottom: "auto",
-    marginRight: "-50%",
     transformValues: "translate(-50%, -50%)",
   },
 };
 
 Modal.setAppElement("#root");
 
-const start_date = moment().minutes(0).seconds(0).add(1, 'hours')
-const end_date = start_date.clone().add(1, 'hours');
+const start_date = moment().minutes(0).seconds(0).add(1, "hours");
+const end_date = start_date.clone().add(1, "hours");
 
-export const CalendarModal = () => {
-  const [isOpen, setisOpen] = useState(true);
-  const [startDate, setStartDate] = useState(start_date.toDate())
-  const [endDate, setEndDate] = useState(end_date.toDate())
+export const CalendarModal = ({isOpen, setisOpen}) => {
+  const [startDate, setStartDate] = useState(start_date.toDate());
+  const [endDate, setEndDate] = useState(end_date.toDate());
 
-const [formValues, setFormValues] = useState({
-  title: "evento",
-  desc: "",
-  start: start_date.toDate(),
-  end: end_date.toDate()
-})
+  const [formValues, setFormValues] = useState({
+    title: "nuevo evento",
+    desc: "",
+    start: start_date.toDate(),
+    end: end_date.toDate(),
+  });
 
-  const {title, desc} = formValues;
+  const { title, desc, start, end } = formValues;
 
-  const handleSubmit = (e: any) =>{
-    e.preventDefault()
-    
-    console.log(formValues)
-  }
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const mStart = moment(start);
+    const mEnd = moment(end);
+
+    if (mStart.isSameOrAfter(mEnd)) {
+      return Swal.fire(
+        "Error",
+        "La fecha final debe ser mayor a la fecha inicial",
+        "warning"
+      );
+    }
+
+    if (title.trim().length === 0) {
+      return Swal.fire("Error", "Debe agregar un titulo", "warning");
+    }
+
+    setisOpen(false);
+  };
 
   const onCloseModal = () => {
     setisOpen(false);
   };
 
-  const handleInputChange = ({target}) =>{
+  const handleInputChange = ({ target }) => {
     setFormValues({
       ...formValues,
-      [target.name]: target.value
-    })
-  }
+      [target.name]: target.value,
+    });
+  };
 
   const onChangeStartDatePicker = (evt: any) => {
     setStartDate(evt);
     setFormValues({
       ...formValues,
-      start: evt
-    })
+      start: evt,
+    });
   };
 
   const onChangeEndDatePicker = (evt: any) => {
-    setEndDate(evt)
+    setEndDate(evt);
     setFormValues({
       ...formValues,
-      end: evt
-    })
+      end: evt,
+    });
   };
 
   return (
@@ -80,17 +93,26 @@ const [formValues, setFormValues] = useState({
       >
         <h1> Nuevo evento </h1>
         <hr />
-        <form className="container"
-              onSubmit={handleSubmit}
-        >
+        <form className="container" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Fecha y hora inicio</label>
-            <DateTimePicker className="form-control" placeholder="Fecha inicio" onChange={onChangeStartDatePicker} value={startDate} />
+            <DateTimePicker
+              className="form-control"
+              placeholder="Fecha inicio"
+              onChange={onChangeStartDatePicker}
+              value={startDate}
+            />
           </div>
 
           <div className="form-group">
             <label>Fecha y hora fin</label>
-            <DateTimePicker className="form-control" placeholder="Fecha fin" onChange={onChangeEndDatePicker} value={endDate} minDate={startDate} />
+            <DateTimePicker
+              className="form-control"
+              placeholder="Fecha fin"
+              onChange={onChangeEndDatePicker}
+              value={endDate}
+              minDate={startDate}
+            />
           </div>
 
           <hr />

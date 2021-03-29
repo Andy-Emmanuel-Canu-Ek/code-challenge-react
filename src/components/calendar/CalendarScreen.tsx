@@ -1,5 +1,5 @@
 import "moment/locale/es";
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { NavbarScreen } from "../ui/NavbarScreen";
 import { messages } from "../../helpers/calendar_config";
@@ -25,10 +25,17 @@ const myEventsList: [any] = [
 ];
 
 export const CalendarScreen = () => {
+  const [isOpen, setisOpen] = useState(true);
 
   const onDoubleClick = (evt: Event) => {
+    setisOpen(true);
+
     console.log(evt);
   };
+
+  const handleSelecting = (evt: any) => {
+    setisOpen(true);
+  }
 
   const eventStyleGetter: any = (
     event: Event,
@@ -53,21 +60,25 @@ export const CalendarScreen = () => {
     <div>
       <NavbarScreen />
 
-      <Calendar
-        localizer={localizer}
-        events={myEventsList}
-        messages={messages}
-        eventPropGetter={eventStyleGetter}
-        components={{
-          event: CalendarEvent,
-        }}
-        onDoubleClickEvent={onDoubleClick}
-        style={{ height: 500 }}
-        startAccessor="start"
-        endAccessor="end"
-      />
-
-      <CalendarModal />
+      <div className="card">
+        <div className="card-body">
+          <Calendar
+            localizer={localizer}
+            events={myEventsList}
+            messages={messages}
+            eventPropGetter={eventStyleGetter}
+            components={{
+              event: CalendarEvent,
+            }}
+            onDoubleClickEvent={onDoubleClick}
+            
+            style={{ height: 500 }}
+            startAccessor="start"
+            endAccessor="end"
+          />
+        </div>
+      </div>
+      <CalendarModal isOpen={isOpen} setisOpen={setisOpen}/>
     </div>
   );
 };
