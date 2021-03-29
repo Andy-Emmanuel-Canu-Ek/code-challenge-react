@@ -22,6 +22,8 @@ const userList = [
     },
 ]
 export const ListUserScreen = () => {
+ 
+  
   return (
     <div>
       <table className="table table-striped table-hover">
