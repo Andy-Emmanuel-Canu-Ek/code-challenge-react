@@ -1,21 +1,22 @@
 import "moment/locale/es";
-import { useEffect, useState } from "react";
 import moment from "moment";
-import { NavbarScreen } from "../ui/NavbarScreen";
-import { messages } from "../../helpers/calendar_config";
-import "react-big-calendar/lib/css/react-big-calendar.css";
 import {
   Calendar,
   momentLocalizer,
   Event,
   stringOrDate,
 } from "react-big-calendar";
-// import { CalendarEvent } from "./CalendarEvent";
+import { useEffect, useState } from "react";
 import { CalendarModal } from "./CalendarModal";
+import { CalendarEvent } from "./CalendarEvent";
+import { NavbarScreen } from "../ui/NavbarScreen";
+import { messages } from "../../helpers/calendar_config";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import { getEventList } from "../../services/eventService";
 import { handleMessageError } from "../../helpers/handleMessages";
+import { formatEventList } from "../../helpers/formatEventList";
 
-moment.locale("es");
+moment.locale('es');
 
 const localizer = momentLocalizer(moment);
 
@@ -23,6 +24,7 @@ export const CalendarScreen = () => {
   const [isOpen, setisOpen] = useState(false);
 
   const [eventList, setEventList] = useState([]);
+  const [evtModal, setEvtModal] = useState({});
 
   useEffect(() => {
     getEventItems();
@@ -31,32 +33,16 @@ export const CalendarScreen = () => {
   const getEventItems = async () => {
     const data = await getEventList();
     if (data.ok) {
-      console.log(data.event_list)
-      const format_events = data.event_list.map((item) => (
-        {
-          title: item.title,
-          start: moment(item.start_date).toDate(),
-          end: moment(item.end_date).toDate(),
-          bgcolor: "#fafafa",
-        }
-      ))
-      console.log(format_events);
-      setEventList(format_events);
-    }else{
+      setEventList(formatEventList(data.event_list));
+    } else {
       handleMessageError(data);
     }
   };
 
-  const onDoubleClick = (evt: Event) => {
+  const handlePressEvent = (e) => {
+    setEvtModal(e);
     setisOpen(true);
-
-    console.log(evt);
   };
-
-
-  const handlePressEvent = (evt: any) => {
-    setisOpen(true);
-  }
 
   const eventStyleGetter: any = (
     event: Event,
@@ -78,29 +64,33 @@ export const CalendarScreen = () => {
   };
 
   return (
-    <div>
+    <>
       <NavbarScreen />
 
       <div className="card">
         <div className="card-body">
           <Calendar
-          selectable={true}
+            selectable={true}
             localizer={localizer}
             events={eventList}
             messages={messages}
             eventPropGetter={eventStyleGetter}
-            // components={{
-            //   event: CalendarEvent,
-            // }}
-            onDoubleClickEvent={onDoubleClick}
+            components={{
+              event: CalendarEvent,
+            }}
             onSelectSlot={handlePressEvent}
-            style={{ height: 500 }}
             startAccessor="start"
             endAccessor="end"
           />
         </div>
       </div>
-      <CalendarModal isOpen={isOpen} setisOpen={setisOpen}/>
-    </div>
+
+      <CalendarModal
+        isOpen={isOpen}
+        setisOpen={setisOpen}
+        evt={evtModal}
+        setEventList={setEventList}
+      />
+    </>
   );
 };

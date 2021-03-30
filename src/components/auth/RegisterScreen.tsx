@@ -57,12 +57,12 @@ export const RegisterScreen = () => {
       isValid = false;
     }
 
-    if(!validator.isEmail(email)){
+    if(isValid && !validator.isEmail(email)){
       Swal.fire('Advertencia', "El email no es válido", "warning");
       isValid = false;
     }
 
-    if(!validator.equals(password, passwordConfirm)){
+    if(isValid && !validator.equals(password, passwordConfirm)){
       Swal.fire('Advertencia', "Las contraseñas no coinciden", "warning");
       isValid = false;
     }

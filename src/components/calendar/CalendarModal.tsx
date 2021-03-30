@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
-import DateTimePicker from "react-datetime-picker";
 import moment from "moment";
+import validator from 'validator'
 import Swal from "sweetalert2";
+import Modal from "react-modal";
+import { useState } from "react";
+import DateTimePicker from "react-datetime-picker";
+import { saveEvent } from "../../services/eventService";
+import { handleMessage, handleMessageError } from "../../helpers/handleMessages";
+import { formatEventList } from "../../helpers/formatEventList";
 
 const customStyles = {
   content: {
@@ -19,12 +23,10 @@ Modal.setAppElement("#root");
 const start_date = moment().minutes(0).seconds(0).add(1, "hours");
 const end_date = start_date.clone().add(1, "hours");
 
-export const CalendarModal = ({isOpen, setisOpen}) => {
-  const [startDate, setStartDate] = useState(start_date.toDate());
-  const [endDate, setEndDate] = useState(end_date.toDate());
-
+export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
+  
   const [formValues, setFormValues] = useState({
-    title: "nuevo evento",
+    title: "",
     desc: "",
     start: start_date.toDate(),
     end: end_date.toDate(),
@@ -32,24 +34,23 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
 
   const { title, desc, start, end } = formValues;
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async(e: any) => {
     e.preventDefault();
-    const mStart = moment(start);
-    const mEnd = moment(end);
-
-    if (mStart.isSameOrAfter(mEnd)) {
-      return Swal.fire(
-        "Error",
-        "La fecha final debe ser mayor a la fecha inicial",
-        "warning"
-      );
+    console.log('object');
+    const { isValid, formData } = isFormValid();
+    
+    if(!isValid){
+      return
     }
 
-    if (title.trim().length === 0) {
-      return Swal.fire("Error", "Debe agregar un titulo", "warning");
+    const data = await saveEvent(formData);
+    if(data.ok){
+      handleMessage(data);
+      setEventList(formatEventList(data.event_list))
+      setisOpen(false);
+    }else{
+      handleMessageError(data);
     }
-
-    setisOpen(false);
   };
 
   const onCloseModal = () => {
@@ -64,7 +65,6 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
   };
 
   const onChangeStartDatePicker = (evt: any) => {
-    setStartDate(evt);
     setFormValues({
       ...formValues,
       start: evt,
@@ -72,11 +72,33 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
   };
 
   const onChangeEndDatePicker = (evt: any) => {
-    setEndDate(evt);
     setFormValues({
       ...formValues,
       end: evt,
     });
+  };
+
+  const isFormValid = () => {
+    let isValid = true;
+    const { title, desc, start, end } = formValues;
+
+    if (moment(start).isSameOrAfter(moment(end))) {
+      console.log('object');
+      Swal.fire(
+        "Error",
+        "La fecha final debe ser mayor a la fecha inicial",
+        "warning"
+      );
+      isValid = false;
+    }
+
+    if (isValid && validator.isEmpty(title)) {
+      Swal.fire("Error", "Debe agregar un titulo", "warning");
+      isValid = false;
+    }
+
+    const formData = { title, desc, start_date: start, end_date: end };
+    return { isValid, formData };
   };
 
   return (
@@ -100,7 +122,7 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
               className="form-control"
               placeholder="Fecha inicio"
               onChange={onChangeStartDatePicker}
-              value={startDate}
+              value={start}
             />
           </div>
 
@@ -110,8 +132,8 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
               className="form-control"
               placeholder="Fecha fin"
               onChange={onChangeEndDatePicker}
-              value={endDate}
-              minDate={startDate}
+              value={end}
+              minDate={start}
             />
           </div>
 
@@ -139,7 +161,7 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
               placeholder="Descripción"
               rows={5}
               value={desc}
-              name="notes"
+              name="desc"
             ></textarea>
 
             <small id="emailHelp" className="form-text text-muted">
