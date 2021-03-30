@@ -44,6 +44,11 @@ export const CalendarScreen = () => {
     setisOpen(true);
   };
 
+  const handleDoubleClickEvent = (e) => {
+    setEvtModal(e);
+    setisOpen(true);
+  };
+
   const eventStyleGetter: any = (
     event: Event,
     start: stringOrDate,
@@ -79,6 +84,7 @@ export const CalendarScreen = () => {
               event: CalendarEvent,
             }}
             onSelectSlot={handlePressEvent}
+            onDoubleClickEvent={handleDoubleClickEvent}
             startAccessor="start"
             endAccessor="end"
           />

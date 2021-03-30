@@ -2,9 +2,9 @@ import moment from "moment";
 import validator from 'validator'
 import Swal from "sweetalert2";
 import Modal from "react-modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DateTimePicker from "react-datetime-picker";
-import { saveEvent } from "../../services/eventService";
+import { saveEvent, deleteEvent} from "../../services/eventService";
 import { handleMessage, handleMessageError } from "../../helpers/handleMessages";
 import { formatEventList } from "../../helpers/formatEventList";
 
@@ -23,20 +23,33 @@ Modal.setAppElement("#root");
 const start_date = moment().minutes(0).seconds(0).add(1, "hours");
 const end_date = start_date.clone().add(1, "hours");
 
+const initialState = {
+  id: 0,
+  title: "",
+  desc: "",
+  start: start_date.toDate(),
+  end: end_date.toDate(),
+}
+
 export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
   
-  const [formValues, setFormValues] = useState({
-    title: "",
-    desc: "",
-    start: start_date.toDate(),
-    end: end_date.toDate(),
-  });
+  const [formValues, setFormValues] = useState(initialState);
 
-  const { title, desc, start, end } = formValues;
+  useEffect(() => {
+    setFormValues({
+      id: evt.id ? evt.id :  0,
+      title: evt.title ? evt.title : "",
+      desc: evt.desc ? evt.desc : "",
+      start: evt.start ? moment(evt.start).toDate() : start_date.toDate(),
+      end: evt.end ? moment(evt.end).toDate() : end_date.toDate(),
+    })
+  }, [evt]);
+
+  const { id, title, desc, start, end } = formValues;
 
   const handleSubmit = async(e: any) => {
     e.preventDefault();
-    console.log('object');
+
     const { isValid, formData } = isFormValid();
     
     if(!isValid){
@@ -52,6 +65,33 @@ export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
       handleMessageError(data);
     }
   };
+
+  const handleDelete = async () =>{
+    Swal.fire({
+      title: "Eliminar evento",
+      text: "¿Seguro que desea eliminar este evento?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar!",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteEventMethod();
+      }
+    });
+  }
+
+  const deleteEventMethod = async () =>{
+    const { id } = formValues;
+    const data = await deleteEvent(id);
+    if(data.ok){
+      handleMessage(data);
+      setEventList(formatEventList(data.event_list))
+      setisOpen(false);
+    }else{
+      handleMessageError(data);
+    }
+  }
 
   const onCloseModal = () => {
     setisOpen(false);
@@ -80,7 +120,7 @@ export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
 
   const isFormValid = () => {
     let isValid = true;
-    const { title, desc, start, end } = formValues;
+    const {id, title, desc, start, end } = formValues;
 
     if (moment(start).isSameOrAfter(moment(end))) {
       console.log('object');
@@ -97,7 +137,7 @@ export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
       isValid = false;
     }
 
-    const formData = { title, desc, start_date: start, end_date: end };
+    const formData = { id, title, desc, start_date: start, end_date: end };
     return { isValid, formData };
   };
 
@@ -113,7 +153,7 @@ export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
         className="modal"
         overlayClassName="modal-fondo"
       >
-        <h1> Nuevo evento </h1>
+        <h1> Guardar evento </h1>
         <hr />
         <form className="container" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -173,6 +213,15 @@ export const CalendarModal = ({ isOpen, setisOpen, evt, setEventList}) => {
             <i className="far fa-save"></i>
             <span> Guardar</span>
           </button>
+          <span> </span>
+          {
+            id !== 0 
+            && 
+            <span  onClick={handleDelete} className="btn btn-outline-danger btn-block">
+            <i className="far fa-save"></i>
+            <span> Eliminar</span>
+          </span>
+          }
         </form>
       </Modal>
     </div>
