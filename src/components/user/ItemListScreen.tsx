@@ -1,6 +1,6 @@
 import React from "react";
 export const ItemListScreen = ({ item, handleDelete }) => {
-  const { index, id, name, email, pass } = item;
+  const { index, name, email } = item;
 
   
   return (

@@ -138,6 +138,7 @@ export const CalendarModal = ({isOpen, setisOpen}) => {
               className="form-control"
               placeholder="Descripción"
               rows={5}
+              value={desc}
               name="notes"
             ></textarea>
 

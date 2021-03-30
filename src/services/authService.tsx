@@ -1,7 +1,7 @@
 import { fetchWitoutToken, fetchWithToken } from "./fetch";
 
-export const login = async (email, password) => {
-  const resp = await fetchWitoutToken("auth", { email, password }, "POST");
+export const login = async (data) => {
+  const resp = await fetchWitoutToken("auth", data, "POST");
   const body = await resp.json();
   if (body.ok) {
     localStorage.setItem("token", body.token);

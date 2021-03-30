@@ -1,4 +1,4 @@
-import { fetchWitoutToken, fetchWithToken } from "./fetch";
+import { fetchWithToken } from "./fetch";
 
 export const getEventList = async () => {
   const resp = await fetchWithToken("events", {}, "GET");

@@ -1,5 +1,5 @@
 import "moment/locale/es";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import { NavbarScreen } from "../ui/NavbarScreen";
 import { messages } from "../../helpers/calendar_config";
@@ -10,24 +10,17 @@ import {
   Event,
   stringOrDate,
 } from "react-big-calendar";
-import { CalendarEvent } from "./CalendarEvent";
+// import { CalendarEvent } from "./CalendarEvent";
 import { CalendarModal } from "./CalendarModal";
 import { getEventList } from "../../services/eventService";
 import { handleMessageError } from "../../helpers/handleMessages";
 
 moment.locale("es");
+
 const localizer = momentLocalizer(moment);
-const myEventsList: [any] = [
-  {
-    title: "Hola",
-    start: moment().toDate(),
-    end: moment().toDate(),
-    bgcolor: "#fafafa",
-  },
-];
 
 export const CalendarScreen = () => {
-  const [isOpen, setisOpen] = useState(true);
+  const [isOpen, setisOpen] = useState(false);
 
   const [eventList, setEventList] = useState([]);
 
@@ -60,7 +53,8 @@ export const CalendarScreen = () => {
     console.log(evt);
   };
 
-  const handleSelecting = (evt: any) => {
+
+  const handlePressEvent = (evt: any) => {
     setisOpen(true);
   }
 
@@ -90,6 +84,7 @@ export const CalendarScreen = () => {
       <div className="card">
         <div className="card-body">
           <Calendar
+          selectable={true}
             localizer={localizer}
             events={eventList}
             messages={messages}
@@ -98,7 +93,7 @@ export const CalendarScreen = () => {
             //   event: CalendarEvent,
             // }}
             onDoubleClickEvent={onDoubleClick}
-            
+            onSelectSlot={handlePressEvent}
             style={{ height: 500 }}
             startAccessor="start"
             endAccessor="end"
