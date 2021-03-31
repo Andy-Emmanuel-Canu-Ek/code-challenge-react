@@ -1,8 +1,7 @@
-import React from "react";
 import { LoginScreen } from "./LoginScreen";
 import { RegisterScreen } from "./RegisterScreen";
 
-export const MainScreen = () => {
+export const MainLoginScreen = () => {
   return (
     <div className="container login-container">
       <div className="row">

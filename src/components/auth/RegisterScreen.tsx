@@ -9,10 +9,10 @@ import Swal from 'sweetalert2';
 
 export const RegisterScreen = () => {
   const [formValuesRegister, handleInputChangeRegister] = useForm({
-    rName: "example",
-    rEmail: "example@gmail.com",
-    rPassword: "123456",
-    rPasswordConfirm: "123456",
+    rName: "",
+    rEmail: "",
+    rPassword: "",
+    rPasswordConfirm: "",
   });
 
   const handleRegister: any = handleInputChangeRegister;

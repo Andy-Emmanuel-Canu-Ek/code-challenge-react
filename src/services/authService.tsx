@@ -1,3 +1,4 @@
+import { authLogout } from "../actions/authActions";
 import { fetchWitoutToken, fetchWithToken } from "./fetch";
 
 export const login = async (data) => {
@@ -5,6 +6,7 @@ export const login = async (data) => {
   const body = await resp.json();
   if (body.ok) {
     localStorage.setItem("token", body.token);
+    localStorage.setItem("user_id", body.user_id);
   }
   return body;
 };
@@ -22,7 +24,14 @@ export const getUserList = async () => {
 };
 
 export const deleteUserId = async (id) => {
-  const resp = await fetchWithToken("auth/"+id, {}, "DELETE");
+  const resp = await fetchWithToken("auth/" + id, {}, "DELETE");
   const body = await resp.json();
   return body;
+};
+
+export const logout = () => {
+  return (dispatch) => {
+    localStorage.clear();
+    dispatch(authLogout());
+  };
 };

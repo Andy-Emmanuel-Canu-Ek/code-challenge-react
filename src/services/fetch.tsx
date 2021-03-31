@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:4000/api";
+const baseUrl = "http://localhost:3001/api";
 
 export const fetchWitoutToken = ( endpoint: string, data: {}, method = 'GET' ) => {
 

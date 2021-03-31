@@ -1,8 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 export const ItemListScreen = ({ item, handleDelete }) => {
-  const { index, name, email } = item;
+  const { user_id } = useSelector((state: any) => state.auth);
 
-  
+  const { _id, index, name, email } = item;
+
   return (
     <>
       <tr>
@@ -11,13 +13,16 @@ export const ItemListScreen = ({ item, handleDelete }) => {
         <td>{email}</td>
         <td>**********</td>
         <td>
-          <button 
-          type="button" 
-          className="btn btn-outline-danger"
-          onClick={() => handleDelete(item)}
-          >
-            Eliminar
-          </button>
+        {user_id !== _id.toString() && (
+          
+            <button
+              type="button"
+              className="btn btn-outline-danger"
+              onClick={() => handleDelete(item)}
+            >
+              Eliminar
+            </button>
+        )}
         </td>
       </tr>
     </>

@@ -1,4 +1,17 @@
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import { logout } from "../../services/authService";
+
+
 export const NavbarScreen = () => {
+  const dispatch = useDispatch()
+  const history = useHistory();
+
+  const handleLogout = () => {
+    dispatch(logout())
+    history.replace("/login")
+  }
+
   return (
     <div className="navbar navbar-expand-lg navbar-dark bg-dark">
       <a className="navbar-brand" href="/">
@@ -13,16 +26,16 @@ export const NavbarScreen = () => {
             </a>
           </li>
           <li className="nav-item active">
-            <a className="nav-link" href="/calendar">
+            <a className="nav-link" href="/agenda">
               Agenda
             </a>
           </li>
         </ul>
       </div>
 
-      <a className="btn btn-outline-info" href="/login">
+      <span className="btn btn-outline-info" onClick={handleLogout}>
         <span>Salir</span>
-      </a>
+      </span>
     </div>
   );
 };

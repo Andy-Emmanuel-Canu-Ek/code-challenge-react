@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from "react";
 import { CalendarModal } from "./CalendarModal";
 import { CalendarEvent } from "./CalendarEvent";
-import { NavbarScreen } from "../ui/NavbarScreen";
 import { messages } from "../../helpers/calendar_config";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { getEventList } from "../../services/eventService";
@@ -70,8 +69,6 @@ export const CalendarScreen = () => {
 
   return (
     <>
-      <NavbarScreen />
-
       <div className="card">
         <div className="card-body">
           <Calendar

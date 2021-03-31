@@ -8,13 +8,16 @@ import {
 import { useForm } from "../../hooks/useForm";
 import { useHistory } from "react-router-dom";
 import { login } from "../../services/authService";
+import { useDispatch } from 'react-redux';
+import { authLogin } from '../../actions/authActions';
 
 export const LoginScreen = () => {
   const history = useHistory();
+  const dispatch = useDispatch()
 
   const [formValuesLogin, handleInputChangeLogin] = useForm({
-    lEmail: "example@gmail.com",
-    lPassword: "123456",
+    lEmail: "",
+    lPassword: "",
   });
 
   const handleLogin: any = handleInputChangeLogin;
@@ -32,7 +35,8 @@ export const LoginScreen = () => {
     const data = await login(formData);
     if (data.ok) {
       handleMessage(data);
-      history.push("/usuario");
+      dispatch(authLogin({ user_id: data.user_id}))
+      history.replace("/");
     } else {
       handleMessageError(data);
     }

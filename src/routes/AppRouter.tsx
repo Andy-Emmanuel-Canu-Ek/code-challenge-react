@@ -1,23 +1,22 @@
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
+  Switch
 } from "react-router-dom";
-import { UserScreen } from "../components/user/UserScreen";
-import { MainScreen } from "../components/auth/MainScreen";
-import { CalendarScreen } from "../components/calendar/CalendarScreen";
+import { MainLoginScreen } from "../components/auth/MainLoginScreen";
+import { MainRouter } from "./MainRouter";
+import { PublicRouter } from "./PublicRouter";
+import { PrivateRouter } from "./PrivateRouter";
+import { useSelector } from "react-redux";
 
 export const AppRouter = () => {
+
+  const {user_id} = useSelector((state: any) => state.auth)
   return (
     <Router>
       <div>
         <Switch>
-          <Route exact path="/login" component={MainScreen} />
-          <Route exact path="/usuario" component={UserScreen} />
-          <Route exact path="/agenda" component={CalendarScreen} />
-          <Route exact path="/" component={CalendarScreen} />
-          <Redirect to="/" />
+          <PublicRouter  isAuth={!!user_id} path="/login" component={MainLoginScreen} />
+          <PrivateRouter isAuth={!!user_id} path="/" component={MainRouter} />
         </Switch>
       </div>
     </Router>
